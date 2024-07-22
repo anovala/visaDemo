@@ -5,9 +5,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <fstream>
 #include <vector>
 #include <xerrc.h>
 #include <iostream>
+#include <fstream>
 
 bool VisaConnector::connect(std::string& resour)
 {
@@ -48,12 +50,12 @@ void VisaConnector::readData()
 
     assert(sizeBuf[0] == '#');
     unsigned long len_size = sizeBuf[1] - '0';
-    unsigned char lenBuf[len_size];
+    std::vector<unsigned char>lenBuf(len_size);
 
-    if(viRead(m_session, lenBuf, len_size, &ret) != VI_SUCCESS_MAX_CNT)
+    if(viRead(m_session, lenBuf.data(), len_size, &ret) != VI_SUCCESS_MAX_CNT)
         throw std::exception("Read failed, can not get length!");
 
-    auto size = atoi((const char*)lenBuf);
+    auto size = atoi((const char*)lenBuf.data());
     printf("total %d bytes need to read!\n",size);
 
     std::vector<unsigned char> buf;
@@ -71,5 +73,23 @@ void VisaConnector::readData()
          throw std::exception("Read failed, can not get binary data!");                       
 
     printf("Read complete, total %d bytes!\n",size);
+    save(buf, "output.png");
     return ;
+}
+
+void VisaConnector::save(const std::vector<unsigned char> &buf,
+                         const std::string &fileName) 
+{
+    std::ofstream outFile(fileName, std::ios::out | std::ios::binary);
+
+    if(!outFile)
+    {
+        throw std::exception("Error open file for write!");
+    }
+
+    outFile.write((const char*)buf.data(), buf.size());
+    if(!outFile)
+        throw std::exception("Error write file!");
+
+    outFile.close();
 }
