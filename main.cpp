@@ -1,6 +1,7 @@
 #include <string>
+#include "src/base.h"
+#include <string>
 #include <visa.h>
-#include "base.h"
 
 int main(void)
 {
@@ -15,6 +16,7 @@ int main(void)
     connector.connect(resource);
     connector.acQuire(absPng);
     connector.readData();
+    connector.disconnect();
 
     return 0;
 }

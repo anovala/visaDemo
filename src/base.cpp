@@ -93,3 +93,12 @@ void VisaConnector::save(const std::vector<unsigned char> &buf,
 
     outFile.close();
 }
+void VisaConnector::disconnect() 
+{
+    viClose(m_session);
+}
+
+void somefunc()
+{
+
+}
