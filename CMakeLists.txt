@@ -20,7 +20,13 @@ target_compile_definitions(
 )
 
 find_package(RSVisa CONFIG REQUIRED)
-target_link_libraries(mvisa PUBLIC rsvisa::visa)
+
+if(RSVisa_FOUND)
+    target_link_libraries(mvisa PUBLIC rsvisa::visa)
+    message("found lib visa!")
+else()
+    message("Lib visa not found!")
+endif()
 
 add_executable(
     VisaDemo 
@@ -28,3 +34,14 @@ add_executable(
 )
 
 target_link_libraries(VisaDemo PRIVATE mvisa)
+
+install(TARGETS VisaDemo
+    DESTINATION bin)
+
+install(TARGETS mvisa 
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib/myproject)
+
+install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/base.h 
+    DESTINATION include)
